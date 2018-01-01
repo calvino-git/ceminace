@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:adm="http://github.com/adminfaces"
+                template="#{layoutMB.template}">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="id" value="#{niveauBean.id}" converter="javax.faces.Integer"/>
+            <!-- use view action if you are in a Java EE 7 server: <f:viewAction action="#{niveauBean.init()}"/>-->
+            <f:event type="preRenderView" listener="#{niveauBean.init}"/>
+        </f:metadata>
+        <ui:param name="renderFormAsterisks" value="true"/>
+        <style type="text/css">
+            .ui-datatable .ui-datatable-header {
+                text-align: left !important;
+            }
+
+            th.ui-filter-column {
+                padding: 5px 2px !important;
+            }
+
+            #footer:hover {
+                opacity: .7;
+            }
+
+            #footer {
+                float: right;
+                font-size: 12px;
+                color: #3c8dbc;
+                font-weight: 500;
+            }
+
+            .ui-datatable-footer {
+                border: none;
+            }
+
+        </style>
+    </ui:define>
+    <ui:define name="title">
+        Niveau d'études...
+    </ui:define>
+    <ui:define name="description">
+        Consulter, ajouter, modifier ou supprimer un niveau.
+    </ui:define>
+
+    <ui:define name="body">
+        <adm:breadcrumb title="#{empty niveauBean.id ? 'Niveau' : 'Niveau '.concat(niveauBean.id)}" link="niveau.xhtml?id=#{niveauBean.id}"/>
+        <h:form id="form" prependId="false">
+            <p:focus context="@form"/>
+            <p:panel id="panel" styleClass="box-primary card" header="Gestion de niveaux">
+                <div id="main-buttons" class="hidden-sm hidden-xs">
+                    <p:commandButton value="Enregistrer" action="#{niveauBean.save}" update="@form" 
+                                     icon="fa fa-check" styleClass="btn-primary"/>
+                    <p:spacer width="5"/>
+                    <p:commandButton value="Vider" action="#{niveauBean.clear}" process="@this"
+                                     icon="fa fa-refresh"
+                                     update="@form" resetValues="true"/>
+                    <p:spacer width="5"/>
+
+                    <p:commandButton id="del" value="Supprimer" action="#{niveauBean.remove}" process="@this"
+                                     disabled="#{niveauBean.isNew()}" update="@form" icon="fa fa-trash"
+                                     styleClass="btn-danger">
+                        <f:setPropertyActionListener value="true"
+                                                     target="#{facesContext.externalContext.flash.keepMessages}"/>
+                        <p:confirm header="Confirmation" message="Merci de confirmer la suppression." icon="ui-icon-danger"/>
+                    </p:commandButton>
+                </div>
+                <p:splitButton value="Enregistrer" action="#{niveauBean.save}" update="@form"
+                               icon="fa fa-check"
+                               styleClass="hidden-md hidden-lg btn-primary">
+                    <p:menuitem value="Vider" action="#{niveauBean.clear}"
+                                process="@this" update="@form" rendered="#{niveauBean.isNew()}"
+                                resetValues="true" icon="fa fa-refresh"/>
+                    <p:menuitem value="Supprimer" action="#{niveauBean.remove}" process="@this"
+                                rendered="#{not niveauBean.isNew()}" icon="fa fa-trash">
+                        <f:setPropertyActionListener value="true"
+                                                     target="#{facesContext.externalContext.flash.keepMessages}"/>
+                        <p:confirm header="Confirmation" message="Merci de confirmer la suppression." icon="ui-icon-danger"/>
+                    </p:menuitem>
+                </p:splitButton>
+
+                <hr/>
+
+                <div  class="ui-g ui-fluid">
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel for="id" value="Numéro"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:inputText id="id" value="#{niveauBean.entity.id}" readonly="true" styleClass="form-control ui-state-disabled" style="width: 100%"/>
+                            <span class="help-block"> 
+                                <p:message for="id" /> 
+                            </span> 
+                        </div>
+                    </div> 
+                    <div class="ui-sm-6 ui-g-3 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel value="Titre" for="titre"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:inputText id="titre" value="#{niveauBean.entity.titre}" required="true" requiredMessage="Titre est obligatoire."/>
+                            <span class="help-block"> 
+                                <p:message for="titre"/> 
+                            </span> 
+                        </div>
+                    </div>     
+                    <div class="ui-sm-6 ui-g-3 ui-g-nopad">     
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel value="Cycle" for="cycle"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:selectOneMenu id="cycle" value="#{niveauBean.entity.cycle}" required="true" requiredMessage="Cycle est obligatoire.">
+                                <f:selectItem itemLabel="Choisir..."/>
+                                <f:selectItem itemLabel="LYCEE" itemValue="LYCEE"/>
+                                <f:selectItem itemLabel="COLLEGE" itemValue="COLLEGE"/>
+                                <f:selectItem itemLabel="PRIMAIRE" itemValue="PRIMAIRE"/>
+                            </p:selectOneMenu>
+                            <span class="help-block"> 
+                                <p:message for="cycle" /> 
+                            </span>
+                        </div>
+                    </div>     
+                    <div class="ui-sm-8 ui-g-4 ui-g-nopad">     
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel value="Description" for="desc"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:inputTextarea id="desc" value="#{niveauBean.entity.description}" required="true" requiredMessage="Description est obligatoire."/>
+                            <span class="help-block"> 
+                                <p:message for="desc" /> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <h:panelGroup id="footer" layout="block" styleClass="hidden-sm hidden-md hidden-lg">
+                    <hr/>
+                    <p:splitButton value="Enregistrer" action="#{niveauBean.save}" update="@form"
+                                   icon="fa fa-check"
+                                   styleClass="hidden-md hidden-lg btn-primary">
+                        <p:menuitem value="Vider" action="#{niveauBean.clear}"
+                                    process="@this" update="@form" rendered="#{niveauBean.isNew()}"
+                                    resetValues="true" icon="fa fa-refresh"/>
+                        <p:menuitem value="Supprimer" action="#{niveauBean.remove}" process="@this"
+                                    rendered="#{not niveauBean.isNew()}" icon="fa fa-trash">
+                            <f:setPropertyActionListener value="true"
+                                                         target="#{facesContext.externalContext.flash.keepMessages}"/>
+                            <p:confirm header="Confirmation" message="Merci de confirmer la suppression." icon="ui-icon-danger"/>
+                        </p:menuitem>
+                    </p:splitButton>
+                </h:panelGroup>
+                
+                <p:dataTable widgetVar="niveauxTable" var="n" value="#{niveauBean.list}" rows="5" rowKey="#{n.id}" 
+                             lazy="true" paginator="true" sortMode="multiple" selectionMode="single" 
+                             sortBy="id" paginatorPosition="bottom" selection="#{niveauBean.selection}"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {JumpToPageDropdown}"
+                             currentPageReportTemplate="[ {startRecord} to {endRecord} of {totalRecords} ]"
+                             rowsPerPageTemplate="5,10,15,20,30" rendered="#{not empty niveauBean.list}">
+
+                    <p:ajax event="rowSelect" listener="#{niveauBean.onRowSelect}" update="form" />
+
+                    <f:facet name="header" >
+                        Liste des niveaux enregistrés
+                    </f:facet>
+                    <p:column headerText="N°" width="10%" styleClass="align-center">
+                        #{n.id}
+                    </p:column>
+                    <p:column headerText="Titre" width="20%" sortBy="#{n.titre}">
+                        #{n.titre}
+                    </p:column>
+                    <p:column headerText="Cycle" width="20%" sortBy="#{n.cycle}"
+                              >
+                        #{n.cycle}
+                    </p:column>
+                    <p:column headerText="Description" width="50%" sortBy="#{n.description}" >
+                        #{n.description}
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" styleClass="box-danger box-solid">
+                <p:commandButton value="Oui" type="button" styleClass="btn-material btn-primary ui-confirmdialog-yes"
+                                 icon="fa fa-check"/>
+                <p:commandButton value="Non" type="button" styleClass="btn-material btn-danger ui-confirmdialog-no"
+                                 icon="fa fa-close"/>
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

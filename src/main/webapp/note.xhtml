@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:adm="http://github.com/adminfaces"
+                template="#{layoutMB.template}">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="exam" value="#{examenBean.id}" converter="javax.faces.Integer"/>
+            <f:event type="preRenderView" listener="#{noteBean.update(examenBean.id)}"/>
+        </f:metadata>
+        <ui:param name="renderFormAsterisks" value="true"/>
+        <style type="text/css">
+            .ui-datatable .ui-datatable-header {
+                text-align: left !important;
+            }
+            .ui-cell-editor-input{
+                color: black !important;
+            }
+
+            th.ui-filter-column {
+                padding: 5px 2px !important;
+            }
+
+
+            #footer:hover {
+                opacity: .7;
+            }
+
+            #footer {
+                float: right;
+                font-size: 12px;
+                color: #3c8dbc;
+                font-weight: 500;
+            }
+
+            .ui-datatable-footer {
+                border: none;
+            }
+
+        </style>
+    </ui:define>
+    <ui:define name="title">
+       Note
+    </ui:define>
+    <ui:define name="title">
+        Gestion des notes.
+    </ui:define>
+
+    <ui:define name="body">
+        <adm:breadcrumb title="#{empty examenBean.id ? 'Note' : ((examenBean.findExamenById(examenBean.id)).type).concat(' du ').concat((examenBean.findExamenById(examenBean.id)).mois)}" link="note.xhtml?exam=#{examenBean.id}"/>
+        <h:form id="form" prependId="false">
+            <p:focus context="@form"/>
+            <p:panel id="panel" styleClass="box-primary card" >
+                <f:facet name="header"  >
+                    <h:outputText styleClass="align-center" 
+                                  value="#{noteBean.entity.examen.titre} - 
+                                  #{noteBean.entity.examen.discipline.matiere.libelle} - 
+                                  Trimestre #{noteBean.entity.examen.trimestre}"/>
+                </f:facet>
+                <div id="main-buttons" >
+                    <div  class="ui-g ui-fluid">
+                        <div class="ui-sm-4 ui-g-4 ui-lg-3">
+                            <p:outputLabel for="date" value="Epreuve du:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="date" value="#{lists.format.format(noteBean.entity.examen.date)}" style="width: 100%"/>
+                        </div>
+                        <div class="ui-sm-4  ui-g-4 ui-lg-3">
+                            <p:outputLabel for="classe" value="Classe:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="classe" value="#{noteBean.entity.examen.discipline.classe.libelle}" style="width: 100%"/>
+                        </div>
+                        <div class="ui-sm-4 ui-g-4 ui-lg-3">
+                            <p:outputLabel for="matiere" value="Matière:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="matiere" value="#{noteBean.entity.examen.discipline.matiere.libelle}" style="width: 100%"/>
+                        </div>
+                        <div class="ui-sm-4 ui-g-4 ui-lg-3"> 
+                            <p:outputLabel for="enseignant" value="Enseignant:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="enseignant" value="#{noteBean.entity.examen.discipline.enseignant.nom} #{noteBean.entity.examen.discipline.enseignant.prenom}" style="width: 100%"/>
+                        </div>
+                        <div class="ui-sm-4 ui-g-4 ui-lg-3">
+                            <p:outputLabel for="eff" value="Effectif:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="eff" value="#{eleveBean.nbrEleveParClasse(noteBean.entity.examen.discipline.classe)}" style="width: 100%"/>
+                        </div>
+                        <div class="ui-sm-4 ui-g-4 ui-lg-3">
+                            <p:outputLabel for="present" value="Presents:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="present" value="#{noteBean.nbrNoteParExamen(noteBean.entity.examen)}" style="width: 100%"/>
+                        </div>
+                        <div class="ui-sm-4 ui-g-4 ui-lg-3">
+                            <p:outputLabel for="absent" value="Absents:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="absent" value="#{eleveBean.nbrEleveParClasse(noteBean.entity.examen.discipline.classe)-noteBean.nbrNoteParExamen(noteBean.entity.examen)}" style="width: 100%"/>
+                        </div>
+                        <div class="ui-sm-4 ui-g-4 ui-lg-3">
+                            <p:outputLabel for="type" value="Catégorie:"/>  
+                            <p:spacer width="5px"/>
+                            <h:outputText id="type" value="#{noteBean.entity.examen.type}" style="width: 100%"/>
+                        </div>
+                    </div>
+                </div>
+                <p:separator/>
+                <p:dataTable id="note" widgetVar="noteTable" var="n" value="#{noteBean.list}" rows="10" rowKey="#{n.id}"  
+                             lazy="true" paginator="true" sortMode="multiple" selectionMode="single" editable="true"
+                             sortBy="id" paginatorPosition="bottom" selection="#{noteBean.selection}" emptyMessage="Aucun enregistrement"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {JumpToPageDropdown}"
+                             currentPageReportTemplate="[ {startRecord} to {endRecord} of {totalRecords} ]" rowIndexVar="x"
+                             rowsPerPageTemplate="10,15,20,30" rendered="#{not empty noteBean.list}">
+
+                    <p:ajax event="rowEdit" listener="#{noteBean.onRowEdited}"/>
+                    <f:facet name="header" >
+                        <div  class="ui-g ui-fluid">
+                            <div class="ui-sm-6 ui-g-6 align-left">
+                                Liste des notes
+                            </div>
+                            <div class="ui-sm-6 ui-g-6 align-right">
+                                <p:commandButton  style="width: 100px" icon="fa fa-filter" value="Arranger" action="#{noteBean.arrangerParNote}" update="note"/>
+                            </div>
+                        </div>
+                    </f:facet>
+                    <p:column headerText="#" width="5%" styleClass="align-center">
+                        #{x+1}
+                    </p:column>
+                    <p:column headerText="Elève" sortBy="#{n.eleve}">
+                        #{n.eleve.nom} #{n.eleve.prenom}
+                    </p:column>
+                    <p:column headerText="Note" width="10%" sortBy="#{n.note}" styleClass="align-center">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{n.note}" style="width: 100%;height: 100%"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputNumber value="#{n.note}" style="width: 100%;height: 100%" minValue="0.00" maxValue="20.00" validatorMessage="Note doit etre entre 0 et 20."/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Observation" width="30%" sortBy="#{n.observation}">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{n.observation}" style="width: 100%;height: 100%"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{n.observation}" style="width: 100%;height: 100%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Rang" width="10%" sortBy="#{n.rang}" styleClass="align-center">
+                        #{n.rang}
+                    </p:column>
+                    <p:column headerText="Action" width="6%">
+                        <p:rowEditor />
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Ajouter" action="#{noteBean.ajoutNote}" oncomplete="PF('noteTable').addRow()" process="@this"/>
+                    </f:facet>
+                </p:dataTable>
+            </p:panel>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" styleClass="box-danger box-solid">
+                <p:commandButton value="Oui" type="button" styleClass="btn-material btn-primary ui-confirmdialog-yes"
+                                 icon="fa fa-check"/>
+                <p:commandButton value="Non" type="button" styleClass="btn-material btn-danger ui-confirmdialog-no"
+                                 icon="fa fa-close"/>
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

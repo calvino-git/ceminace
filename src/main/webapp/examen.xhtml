@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:adm="http://github.com/adminfaces"
+                template="#{layoutMB.template}">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{examenBean.init}"/>
+        </f:metadata>
+        <ui:param name="renderFormAsterisks" value="true"/>
+        <style type="text/css">
+            .ui-datatable .ui-datatable-header {
+                text-align: left !important;
+            }
+
+            th.ui-filter-column {
+                padding: 5px 2px !important;
+            }
+
+            #footer:hover {
+                opacity: .7;
+            }
+
+            #footer {
+                float: right;
+                font-size: 12px;
+                color: #3c8dbc;
+                font-weight: 500;
+            }
+
+            .ui-datatable-footer {
+                border: none;
+            }
+
+        </style>
+    </ui:define>
+    <ui:define name="title">
+        Examen
+    </ui:define>
+    <ui:define name="description">
+        Consulter, ajouter,modifier ou supprimer un examen.
+    </ui:define>
+
+    <ui:define name="body">
+        <adm:breadcrumb title="#{empty examenBean.id ? 'Examen' : 'Examen '.concat(examenBean.id)}" link="examen.xhtml?id=#{examenBean.id}"/>
+        <h:form id="form" prependId="false">
+            <p:focus context="@form"/>
+            <p:panel id="panel" styleClass="box-primary card" header="Gestion d'examens">
+
+                <div  class="ui-g ui-fluid">
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel for="id" value="Numéro"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:inputText id="id" value="#{examenBean.entity.id}" readonly="true" styleClass="form-control ui-state-disabled" style="width: 100%"/>
+                            <span class="help-block"> 
+                                <p:message for="id" /> 
+                            </span> 
+                        </div>
+                    </div> 
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel for="date" value="Date"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:datePicker id="date"  locale="fr" value="#{examenBean.entity.date}" pattern="dd/MM/yyyy"/>
+                            <span class="help-block"> 
+                                <p:message for="date" /> 
+                            </span> 
+                        </div>
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel for="mois" value="Mois"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:inputText id="mois" value="#{examenBean.entity.mois}" style="width: 100%"/>
+                            <span class="help-block"> 
+                                <p:message for="mois" /> 
+                            </span> 
+                        </div>
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel for="trim" value="Trimestre"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:inputText id="trim" value="#{examenBean.entity.trimestre}" style="width: 100%"/>
+                            <span class="help-block"> 
+                                <p:message for="trim" /> 
+                            </span> 
+                        </div>
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel for="titre" value="Titre"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:inputText id="titre" value="#{examenBean.entity.titre}"  style="width: 100%"/>
+                            <span class="help-block"> 
+                                <p:message for="titre" /> 
+                            </span> 
+                        </div>
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel for="type" value="Type"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:selectOneMenu id="type" value="#{examenBean.entity.type}" required="true" requiredMessage="Cycle est obligatoire.">
+                                <f:selectItem itemLabel="Choisir..."/>
+                                <f:selectItem itemLabel="INTERRO 1" itemValue="INTERRO 1"/>
+                                <f:selectItem itemLabel="INTERRO 2" itemValue="INTERRO 2"/>
+                                <f:selectItem itemLabel="EVALUATION" itemValue="EVALUATION"/>
+                                <f:selectItem itemLabel="COMPOSITION" itemValue="COMPOSITION"/>
+                            </p:selectOneMenu>
+                            <span class="help-block"> 
+                                <p:message for="type" /> 
+                            </span> 
+                        </div>
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel value="Discipline" for="disc"/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:autoComplete  id="disc" converter="#{disciplineConverter}" var="d" itemLabel="#{d.matiere.code} #{d.classe.code}" itemValue="#{d}" value="#{examenBean.entity.discipline}" forceSelection="true"
+                                             minQueryLength="2" queryDelay="500" dropdown="true" 
+                                             completeMethod="#{disciplineBean.findByLibelle}" maxResults="10" required="true" requiredMessage="Classe est obligatoire.">
+                            </p:autoComplete> 
+                            <span class="help-block"> 
+                                <p:message for="disc"/> 
+                            </span> 
+                        </div>
+                    </div>
+                    <div class="ui-sm-8 ui-g-4 ui-g-nopad">
+
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel value=""/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:commandButton value="Enregistrer" action="#{examenBean.createNewExam}" update="@form" 
+                                             icon="fa fa-check" styleClass="btn-primary"/>
+                        </div>
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel value=""/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:commandButton value="Vider" action="#{examenBean.clear}" process="@this"
+                                             icon="fa fa-refresh"
+                                             update="@form" resetValues="true"/>
+                        </div>
+                    </div>
+                    <div class="ui-sm-4 ui-g-2 ui-g-nopad"> 
+                        <div class="ui-sm-12 ui-g-11">
+                            <p:outputLabel value=""/>
+                        </div>
+                        <div class="ui-sm-12 ui-g-11" >
+                            <p:commandButton id="del" value="Supprimer" action="#{examenBean.remove}" process="@this"
+                                             disabled="#{examenBean.isNew()}" update="@form" icon="fa fa-trash"
+                                             styleClass="btn-danger">
+                                <f:setPropertyActionListener value="true"
+                                                             target="#{facesContext.externalContext.flash.keepMessages}"/>
+                                <p:confirm header="Confirmation" message="Merci de confirmer la suppression." icon="ui-icon-danger"/>
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </div>
+
+                <p:spacer height="20px"/>
+                <div  class="ui-g ui-fluid">
+                    <div class="ui-sm-12 ui-g-12 ui-g-nopad">
+                        <p:dataTable widgetVar="examenTable" var="ex" value="#{examenBean.list}" rows="5" rowKey="#{ex.id}" 
+                                     lazy="true" paginator="true" sortMode="multiple" selectionMode="single" rowIndexVar="x" 
+                                     sortBy="id" paginatorPosition="bottom" selection="#{examenBean.selection}"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {JumpToPageDropdown}"
+                                     currentPageReportTemplate="[ {startRecord} to {endRecord} of {totalRecords} ]"
+                                     rowsPerPageTemplate="5,10,15,20,30" rendered="#{not empty examenBean.list}">
+
+                            <p:ajax event="rowSelect" listener="#{examenBean.onRowSelect}" update="form" />
+
+                            <f:facet name="header" >
+                                Liste des examens
+                            </f:facet>
+                            <p:column headerText="N°" width="10%" styleClass="align-center">
+                                #{x+1}
+                            </p:column>
+                            <p:column headerText="Date" width="20%" sortBy="#{ex.date}">
+                                #{lists.format.format(ex.date)}
+                            </p:column>
+                            <p:column headerText="Mois" width="20%" sortBy="#{ex.mois}">
+                                #{ex.mois}
+                            </p:column>
+                            <p:column headerText="Trimestre" width="20%" sortBy="#{ex.trimestre}">
+                                #{ex.trimestre}
+                            </p:column>
+                            <p:column headerText="Titre" width="20%" sortBy="#{ex.titre}">
+                                <h:link value="#{ex.titre}"  outcome="note">
+                                    <f:param name="exam" value="#{ex.id}"/>
+                                </h:link>
+                            </p:column>
+                            <p:column headerText="Type" width="20%" sortBy="#{ex.type}">
+                                #{ex.type}
+                            </p:column>
+                            <p:column headerText="Matière" width="20%" sortBy="#{ex.discipline}">
+                                #{ex.discipline.matiere.libelle}
+                            </p:column>
+                            <p:column headerText="Classe" width="20%" sortBy="#{ex.discipline}">
+                                #{ex.discipline.classe.libelle}
+                            </p:column>
+                            <p:column headerText="Enseignant" width="20%" sortBy="#{ex.discipline}">
+                                #{ex.discipline.enseignant.nom} #{ex.discipline.enseignant.prenom}
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+
+            </p:panel>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" styleClass="box-danger box-solid">
+                <p:commandButton value="Oui" type="button" styleClass="btn-material btn-primary ui-confirmdialog-yes"
+                                 icon="fa fa-check"/>
+                <p:commandButton value="Non" type="button" styleClass="btn-material btn-danger ui-confirmdialog-no"
+                                 icon="fa fa-close"/>
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
