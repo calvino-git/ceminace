@@ -72,7 +72,7 @@
     <data-source>
         <name>java:app/ceminace</name>
         <class-name>com.mysql.cj.jdbc.MysqlDataSource</class-name>
-        <url>jdbc:mysql://localhost:8889/ceminace</url>
+        <url>jdbc:mysql://localhost:3308/ceminace</url>
         <user>root</user>
         <password>root</password>
         <property>
