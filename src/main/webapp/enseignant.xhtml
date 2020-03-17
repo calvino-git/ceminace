@@ -172,7 +172,7 @@
                     <p:column headerText="N°" width="10%" styleClass="align-center">
                         #{e.id}
                     </p:column>
-                    <p:column headerText="Nom" width="20%" sortBy="#{e.nom}" filterBy="#{e.nom}">
+                    <p:column headerText="Nom" width="20%" sortBy="#{e.nom}">
                         <f:facet name="filter">
                             <p:inputText value="#{enseignantBean.filter.entity.nom}">
                                     <p:ajax process="@this" update="@none" oncomplete="PF('enseignantTable').filter()"/>
@@ -180,7 +180,7 @@
                             </f:facet>
                         #{e.nom}
                     </p:column>
-                    <p:column headerText="Prénom" width="20%" sortBy="#{e.prenom}" filterBy="#{e.prenom}">
+                    <p:column headerText="Prénom" width="20%" sortBy="#{e.prenom}">
                         <f:facet name="filter">
                             <p:inputText value="#{enseignantBean.filter.entity.prenom}">
                                     <p:ajax process="@this" update="@none" oncomplete="PF('enseignantTable').filter()"/>
@@ -188,7 +188,7 @@
                             </f:facet>
                         #{e.prenom}
                     </p:column>
-                    <p:column headerText="Utilisateur" width="20%" sortBy="#{e.user}" filterBy="#{e.user}">
+                    <p:column headerText="Utilisateur" width="20%" sortBy="#{e.user}">
                         <f:facet name="filter">
                             <p:inputText value="#{enseignantBean.filter.entity.user}">
                                     <p:ajax process="@this" update="@none" oncomplete="PF('enseignantTable').filter()"/>

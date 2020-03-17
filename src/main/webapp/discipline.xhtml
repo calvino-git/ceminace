@@ -140,7 +140,7 @@
                         <div class="ui-sm-12 ui-g-11" >
                             <p:autoComplete  id="prof" converter="#{enseignantConverter}" var="e" itemLabel="#{e.nom} #{e.prenom}" itemValue="#{e}" value="#{disciplineBean.entity.enseignant}" forceSelection="true"
                                              minQueryLength="2" queryDelay="500" dropdown="true" 
-                                             completeMethod="#{enseignantBean.getLibelle}" maxResults="10" required="true" requiredMessage="Classe est obligatoire.">
+                                             completeMethod="#{enseignantBean.findByLibelle}" maxResults="10" required="true" requiredMessage="Classe est obligatoire.">
                             </p:autoComplete>                            <span class="help-block"> 
                                 <p:message for="prof" /> 
                             </span>

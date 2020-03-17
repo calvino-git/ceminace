@@ -10,18 +10,12 @@ import static com.github.adminfaces.persistence.bean.CrudMB.addDetailMsg;
 import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.service.Service;
 import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
-import com.github.adminfaces.starter.model.Classe;
-import com.github.adminfaces.starter.model.Eleve;
 import com.github.adminfaces.starter.model.Examen;
 import com.github.adminfaces.starter.model.Note;
-import com.github.adminfaces.starter.model.Enseignant;
-import com.github.adminfaces.starter.model.Matiere;
-import com.github.adminfaces.starter.model.Note_;
 import com.github.adminfaces.starter.service.NoteService;
 import com.github.adminfaces.template.exception.BusinessException;
 import static com.github.adminfaces.template.util.Assert.has;
 import org.omnifaces.cdi.ViewScoped;
-import org.omnifaces.util.Faces;
 
 import javax.inject.Named;
 import java.io.Serializable;
@@ -30,15 +24,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import javax.el.ELContext;
-import javax.el.ValueExpression;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.application.Application;
-import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.apache.deltaspike.data.api.audit.CurrentUser;
-import org.hibernate.internal.util.compare.ComparableComparator;
+import org.primefaces.PrimeFaces;
+import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.event.RowEditEvent;
 
 /**
@@ -55,12 +45,11 @@ public class NoteBean extends CrudMB<Note> implements Serializable {
     @Inject
     @Service
     CrudService<Note, Integer> noteCrudService; //generic injection example
-    
+
     @Inject
     @Service
     CrudService<Examen, Integer> examenCrudService;
-    
-    @Inject
+
     ExamenBean examenBean;
 
     private List<Note> listeNote;
@@ -73,20 +62,17 @@ public class NoteBean extends CrudMB<Note> implements Serializable {
     public void initService() {
         setCrudService(noteService);
     }
-    
+
     @PostConstruct
-    public void initNoteBean(){
-        this.id = examenBean.getId();
+    public void initNoteBean() {
+        System.out.println("com.github.adminfaces.starter.bean.NoteBean.initNoteBean()");
     }
 
     public void arrangerParNote() {
-        entity.setExamen(exa);
-        filter.setEntity(entity);
-        list.setFilter(filter);
-        List<Note> liste = list.getWrappedData()
-                .stream()
-                .filter(n -> n.getExamen().equals(exa))
-                .collect(Collectors.toList());
+//        entity.setExamen(exa);
+//        filter.setEntity(entity);
+//        list.setFilter(filter);
+        List<Note> liste = list.getWrappedData();
 
         Comparator<Note> comp = (o1, o2) -> {
             Double d = o2.getNote() - o1.getNote();
@@ -105,15 +91,8 @@ public class NoteBean extends CrudMB<Note> implements Serializable {
         liste.sort(comp);
         for (Note n : liste) {
             n.setRang(++i);
-            entity = n;
-            save();
+            noteService.update(n);
         }
-    }
-
-    public void ajoutNote() {
-        Note note = new Note();
-        entity = note;
-        save();
     }
 
     public int nbrNoteParExamen(Examen examen) {
@@ -124,24 +103,26 @@ public class NoteBean extends CrudMB<Note> implements Serializable {
         return examenCrudService.findById(examen);
     }
 
-    public void update(int examen) {
+    public void update() {
         if (exa != null && exa.getId() != null && exa.getId() != 0) {
-            if ((exa.getId() == examen && examen != 0)||(exa.getId() != examen && examen == 0)) {
+
+            if ((exa.getId() == currentExamenId && currentExamenId != 0) || (exa.getId() != currentExamenId && currentExamenId == 0)) {
                 entity.setExamen(exa);
                 filter.setEntity(entity);
-            } 
-            if (exa.getId() != examen && examen != 0) {
-                exa = findExamen(examen);
+            }
+            if (exa.getId() != currentExamenId && currentExamenId != 0) {
+                exa = findExamen(currentExamenId);
                 entity.setExamen(exa);
                 filter.setEntity(entity);
             }
         } else {
-            if (examen != 0) {
-                exa = findExamen(examen);
+            if (currentExamenId != 0) {
+                exa = findExamen(currentExamenId);
                 entity.setExamen(exa);
                 filter.setEntity(entity);
             }
         }
+//        arrangerParNote();
 
     }
 
@@ -225,13 +206,14 @@ public class NoteBean extends CrudMB<Note> implements Serializable {
 
     @Override
     public void afterUpdate() {
-        addDetailMsg("Note " + entity.getId() + " updated successfully");
+//        addDetailMsg("Note " + entity.getId() + " updated successfully");
     }
 
     public void onRowEdited(RowEditEvent event) {
-        this.entity = (Note) event.getObject();
-        System.out.println("Note : " + entity.getId());
-        this.save();
+        Note note = (Note) event.getObject();
+        System.out.println("Note : " + note.getId());
+        noteService.update(note);
+//        arrangerParNote();
     }
 
     public int getCurrentExamenId() {
@@ -249,8 +231,7 @@ public class NoteBean extends CrudMB<Note> implements Serializable {
     public void setExa(Examen aExa) {
         exa = aExa;
     }
-    
-    
+
     public List<Note> getListeNote() {
         return listeNote;
     }
@@ -258,6 +239,5 @@ public class NoteBean extends CrudMB<Note> implements Serializable {
     public void setListeNotex(List<Note> listeNote) {
         this.listeNote = listeNote;
     }
-
 
 }

@@ -6,8 +6,8 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:viewParam name="exam" value="#{examenBean.id}" converter="javax.faces.Integer"/>
-            <f:event type="preRenderView" listener="#{noteBean.update(examenBean.id)}"/>
+            <f:viewParam name="exam" value="#{noteBean.currentExamenId}" converter="javax.faces.Integer"/>
+            <f:event type="preRenderView" listener="#{noteBean.update()}"/>
         </f:metadata>
         <ui:param name="renderFormAsterisks" value="true"/>
         <style type="text/css">
@@ -41,7 +41,7 @@
         </style>
     </ui:define>
     <ui:define name="title">
-       Note
+        Note
     </ui:define>
     <ui:define name="title">
         Gestion des notes.
@@ -109,15 +109,15 @@
                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {JumpToPageDropdown}"
                              currentPageReportTemplate="[ {startRecord} to {endRecord} of {totalRecords} ]" rowIndexVar="x"
                              rowsPerPageTemplate="10,15,20,30" rendered="#{not empty noteBean.list}">
-
-                    <p:ajax event="rowEdit" listener="#{noteBean.onRowEdited}"/>
+                    <p:autoUpdate />
+                    <p:ajax event="rowEdit" listener="#{noteBean.onRowEdited}" update="note"/>
                     <f:facet name="header" >
                         <div  class="ui-g ui-fluid">
                             <div class="ui-sm-6 ui-g-6 align-left">
                                 Liste des notes
                             </div>
                             <div class="ui-sm-6 ui-g-6 align-right">
-                                <p:commandButton  style="width: 100px" icon="fa fa-filter" value="Arranger" action="#{noteBean.arrangerParNote}" update="note"/>
+                                <p:commandButton id="order"  style="width: 40%" icon="fa fa-sort" value="Ordonner par note" action="#{noteBean.arrangerParNote()}" update="note"/>
                             </div>
                         </div>
                     </f:facet>
@@ -153,9 +153,6 @@
                     <p:column headerText="Action" width="6%">
                         <p:rowEditor />
                     </p:column>
-                    <f:facet name="footer">
-                        <p:commandButton value="Ajouter" action="#{noteBean.ajoutNote}" oncomplete="PF('noteTable').addRow()" process="@this"/>
-                    </f:facet>
                 </p:dataTable>
             </p:panel>
 
