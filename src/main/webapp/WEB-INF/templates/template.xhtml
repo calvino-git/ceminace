@@ -3,16 +3,17 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                template="/admin.xhtml">
+                template="/admin.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="head">
         <title>Ceminace</title>
         <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/favicon.ico']}"/>
-        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/favicon-16x16.png']}" sizes="16x16"/>
-        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/favicon-32x32.png']}" sizes="32x32"/>
-        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/favicon-96x96.png']}" sizes="96x96"/>
-        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/favicon-144x144.png']}" sizes="144x144"/>
-        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/favicon-196x196.png']}" sizes="196x196"/>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/login.jpg']}" sizes="16x16"/>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/login.jpg']}" sizes="32x32"/>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/login.jpg']}" sizes="96x96"/>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/login.jpg']}" sizes="144x144"/>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon/login.jpg']}" sizes="196x196"/>
         <meta name="theme-color" content="#444"/>
         <meta name="mobile-web-app-capable" content="yes"/>
         <f:loadBundle var="msg" basename="messages"/>
@@ -20,11 +21,12 @@
     </ui:define>
 
     <ui:define name="logo">
+        <p:graphicImage width="48" value="#{resource['images/login.jpg']}"/>
         Ceminace
     </ui:define>
 
     <ui:define name="logo-mini">
-        CEM
+        <p:graphicImage width="48" value="#{resource['images/login.jpg']}"/>
     </ui:define>
 
      <ui:define name="menu">
