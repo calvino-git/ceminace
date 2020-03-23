@@ -90,7 +90,7 @@
                              layout="grid" styleClass="ui-fluid card">
                     <p:dataTable widgetVar="bullTable" var="e" value="#{releveBean.list}" reflow="true"
                                  paginator="true" paginatorPosition="bottom" rows="5" rowIndexVar="x"
-                                  
+                                 sortMode="single" 
                                  rendered="#{not empty releveBean.list}">
 
                         <f:facet name="header" >
@@ -123,11 +123,8 @@
                         <p:column headerText="MOY. TRIMESTRE" styleClass="align-center">
                             #{((releveBean.noteExamenParEleve(e, "COMPOSITION")+(((releveBean.noteExamenParEleve(e, "INTERRO 1")+releveBean.noteExamenParEleve(e, "INTERRO 2"))/2) + releveBean.noteExamenParEleve(e, "EVALUATION"))/2)/2)}
                         </p:column>
-                        <p:column headerText="MOY. TRIM. x Coef." styleClass="align-center">
+                        <p:column headerText="MOY. TRIM. x Coef." sortBy="#{(releveBean.findDisciplineByClasseMatiere(releveBean.classe, releveBean.matiere)).coefficient * ((releveBean.noteExamenParEleve(e, 'COMPOSITION')+(((releveBean.noteExamenParEleve(e, 'INTERRO 1')+releveBean.noteExamenParEleve(e, 'INTERRO 2'))/2) + releveBean.noteExamenParEleve(e, 'EVALUATION'))/2)/2)}"  styleClass="align-center">
                             #{(releveBean.findDisciplineByClasseMatiere(releveBean.classe, releveBean.matiere)).coefficient * ((releveBean.noteExamenParEleve(e, "COMPOSITION")+(((releveBean.noteExamenParEleve(e, "INTERRO 1")+releveBean.noteExamenParEleve(e, "INTERRO 2"))/2) + releveBean.noteExamenParEleve(e, "EVALUATION"))/2)/2)}
-                        </p:column>
-                        <p:column headerText="RANG" styleClass="align-center" >
-                            #{x+1}
                         </p:column>
                     </p:dataTable>
                 </p:panelGrid>
